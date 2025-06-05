@@ -13,7 +13,7 @@ void Delay::prepare(const juce::dsp::ProcessSpec& spec) {
 
     delayReadPosition = (int)(delayWritePosition - (delayLength * spec.sampleRate) + delayBufferLength) % delayBufferLength;
 };
-void Delay::processBlock(juce::AudioBuffer<float>& buffer, 
+void Delay::process(juce::AudioBuffer<float>& buffer, 
                          const int numInputChannels,
                          const int numOutputChannels) {
     const int numSamples = buffer.getNumSamples();

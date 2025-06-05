@@ -2,7 +2,7 @@
 class Delay {
 public:
     void prepare(const juce::dsp::ProcessSpec& spec);
-    void processBlock(juce::AudioBuffer<float>& buffer,
+    void process(juce::AudioBuffer<float>& buffer,
                       const int numInputChannels,
                       const int numOutputChannels);
     void setParameters(int test);

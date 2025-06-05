@@ -2,7 +2,7 @@
 class Reverb {
 public:
     void prepare(const juce::dsp::ProcessSpec& spec);
-    void processBlock(juce::AudioBuffer<float>& buffer);
+    void process(juce::AudioBuffer<float>& buffer);
     void setParameters(int test);
 private:
     juce::AudioProcessorValueTreeState apvts;

@@ -4,7 +4,7 @@
 void Reverb::prepare(const juce::dsp::ProcessSpec& spec) {
     reverb.prepare(spec);
 };
-void Reverb::processBlock(juce::AudioBuffer<float>& buffer) {
+void Reverb::process(juce::AudioBuffer<float>& buffer) {
     
     juce::ScopedNoDenormals noDenormals;
 

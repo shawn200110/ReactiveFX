@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "FX/Controller.h"
 
 
 
@@ -56,6 +57,10 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    Delay delay;
+    Reverb reverb;
+    Distortion distortion;
+
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReactiveFXAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ReactiveFXAudioProcessor);
 };

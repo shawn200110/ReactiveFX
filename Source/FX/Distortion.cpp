@@ -3,7 +3,7 @@
 void Distortion::prepare(const juce::dsp::ProcessSpec& spec) {
 };
 
-void Distortion::processBlock(juce::AudioBuffer<float>& buffer,
+void Distortion::process(juce::AudioBuffer<float>& buffer,
                               const int numInputChannels,
                               const int numOutputChannels) {
     juce::ScopedNoDenormals noDenormals;
