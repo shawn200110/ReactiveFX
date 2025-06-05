@@ -1,7 +1,7 @@
 #include <JuceHeader.h>
 class Reverb {
 public:
-    void prepareToPlay(double sampleRate, int samplesPerBlock);
+    void prepare(const juce::dsp::ProcessSpec& spec);
     void processBlock(juce::AudioBuffer<float>& buffer);
     void setParameters(int test);
 private:
@@ -19,5 +19,4 @@ private:
     juce::dsp::Reverb reverb;
 
     juce::UndoManager undoManager;
-    // Internal state and processing variables
 };
