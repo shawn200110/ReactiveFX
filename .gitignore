@@ -129,3 +129,6 @@ JuceLibraryCode/JuceHeader.h
 JuceLibraryCode/JucePluginDefines.h
 JuceLibraryCode/ReadMe.txt
 ReactiveFX.jucer
+*.obj
+*.ipch
+*.vsidx
