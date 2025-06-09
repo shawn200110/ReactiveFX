@@ -73,7 +73,8 @@ private:
     juce::AudioParameterFloat* delayDryMix = nullptr;
     juce::AudioParameterFloat* delayWetMix = nullptr;
     juce::AudioParameterFloat* delayFeedback = nullptr;
-
+    
+    
 
     Delay delay;
     Reverb reverb;

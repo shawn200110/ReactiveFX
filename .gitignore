@@ -132,3 +132,13 @@ ReactiveFX.jucer
 *.obj
 *.ipch
 *.vsidx
+*.log
+*.tlog
+*.res
+*.pdb
+*.txt
+*.exe
+*.iobj
+*.recipe
+*.lib
+Builds/VisualStudio2022/x64/Debug/Shared Code/Reactive.E601FF12.tlog/unsuccessfulbuild

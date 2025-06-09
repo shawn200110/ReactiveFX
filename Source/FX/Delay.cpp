@@ -8,10 +8,13 @@ void Delay::prepare(const juce::dsp::ProcessSpec& spec) {
     if (delayBufferLength < 1)
         delayBufferLength = 1;
 
+    delayWritePosition = 0;
+
     delayBuffer.setSize(2, delayBufferLength);
     delayBuffer.clear();
+    const float len = length->get();
 
-    delayReadPosition = (int)(delayWritePosition - (length->get() * spec.sampleRate) + delayBufferLength) % delayBufferLength;
+    delayReadPosition = (int)(delayWritePosition - (len * spec.sampleRate) + delayBufferLength) % delayBufferLength;
 };
 void Delay::process(juce::AudioBuffer<float>& buffer, 
                          const int numInputChannels,
