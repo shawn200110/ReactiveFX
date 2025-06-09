@@ -11,7 +11,7 @@ void Delay::prepare(const juce::dsp::ProcessSpec& spec) {
     delayBuffer.setSize(2, delayBufferLength);
     delayBuffer.clear();
 
-    delayReadPosition = (int)(delayWritePosition - (delayLength * spec.sampleRate) + delayBufferLength) % delayBufferLength;
+    delayReadPosition = (int)(delayWritePosition - (length->get() * spec.sampleRate) + delayBufferLength) % delayBufferLength;
 };
 void Delay::process(juce::AudioBuffer<float>& buffer, 
                          const int numInputChannels,
@@ -19,6 +19,11 @@ void Delay::process(juce::AudioBuffer<float>& buffer,
     const int numSamples = buffer.getNumSamples();
 
     int dpr, dpw;
+
+    const float len = length->get();
+    const float dry = dryMix->get();
+    const float wet = wetMix->get();
+    const float fdbk = feedback->get();
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -33,9 +38,9 @@ void Delay::process(juce::AudioBuffer<float>& buffer,
             const float in = channelData[i];
             float out = 0.0;
 
-            out = (dryMix * in + wetMix * delayData[dpr]);
+            out = (dry * in + wet * delayData[dpr]);
 
-            delayData[dpw] = in + (delayData[dpr] * feedback);
+            delayData[dpw] = in + (delayData[dpr] * fdbk);
 
             if (++dpr >= delayBufferLength)
                 dpr = 0;
@@ -59,6 +64,4 @@ void Delay::process(juce::AudioBuffer<float>& buffer,
         buffer.clear(i, 0, buffer.getNumSamples());
 };
 
-void Delay::setParameters(int test) {
-};
 

@@ -18,10 +18,10 @@ void Distortion::process(juce::AudioBuffer<float>& buffer,
         buffer.clear(i, 0, buffer.getNumSamples());
 
     // THESE ARE HARDCODED, NEED TO CONNECT TO PARAMETER
-    float drive = 1;
-    float range = 1;
-    float blend = 1;
-    float volume = 1;
+    const float driveAmt = drive->get();
+    const float rangeAmt = range->get();
+    const float blendAmt = blend->get();
+    const float volumeAmt = volume->get();
 
 
     // Make sure to reset the state if your inner loop is processing
@@ -36,13 +36,12 @@ void Distortion::process(juce::AudioBuffer<float>& buffer,
 
             float cleanData = *channelData;
 
-            *channelData *= drive * range;
+            *channelData *= driveAmt * rangeAmt;
 
-            *channelData = (((((2.f / juce::float_Pi) * atan(*channelData)) * blend) + (cleanData * (1.f - blend))) / 2.f) * volume;
+            *channelData = (((((2.f / juce::float_Pi) * atan(*channelData)) * blendAmt) + (cleanData * (1.f - blendAmt))) / 2.f) * volumeAmt;
 
             channelData++;
         }
     }
 };
-void Distortion::setParameters(int test) {
-};
+

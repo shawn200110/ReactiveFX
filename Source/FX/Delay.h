@@ -5,22 +5,23 @@ public:
     void process(juce::AudioBuffer<float>& buffer,
                       const int numInputChannels,
                       const int numOutputChannels);
-    void setParameters(int test);
+    void setParameters(
+        juce::AudioParameterFloat* lengthIn,
+        juce::AudioParameterFloat* dryMixIn,
+        juce::AudioParameterFloat* wetMixIn,
+        juce::AudioParameterFloat* feedbackIn)
+    {
+        length = lengthIn;
+        dryMix = dryMixIn;
+        wetMix = wetMixIn;
+        feedback = feedbackIn;
+    };
     int lastUIWidth, lastUIHeight;
 
-    enum Parameters
-    {
-        delayLengthParam = 0,
-        dryMixParam,
-        wetMixParam,
-        feedbackParam,
-        numParameters
-    };
-
-    float delayLength;
-    float dryMix;
-    float wetMix;
-    float feedback;
+    juce::AudioParameterFloat* length;
+    juce::AudioParameterFloat* dryMix;
+    juce::AudioParameterFloat* wetMix;
+    juce::AudioParameterFloat* feedback;
 
 private:
     // circular buffer variables

@@ -14,18 +14,15 @@ void Reverb::process(juce::AudioBuffer<float>& buffer) {
     juce::dsp::ProcessContextReplacing ctx(block);
     reverb.process(ctx);
 };
-void Reverb::setParameters(int test) {
-};
+
 
 void Reverb::updateReverbParams()
 {
-    params.roomSize = size->get() * 0.01f;
-    params.damping = damp->get() * 0.01f;
-    params.width = width->get() * 0.01f;
-    params.wetLevel = mix->get() * 0.01f;
-    params.dryLevel = 1.0f - mix->get() * 0.01f;
+    params.roomSize = size->get();
+    params.damping = damp->get();
+    params.width = width->get();
+    params.wetLevel = mix->get();
     params.freezeMode = freeze->get();
-
     reverb.setParameters(params);
 }
 
