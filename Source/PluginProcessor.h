@@ -57,9 +57,29 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    juce::AudioProcessorValueTreeState apvts;
+    juce::AudioParameterFloat* reverbSize = nullptr;
+    juce::AudioParameterFloat* reverbDamping = nullptr;
+    juce::AudioParameterFloat* reverbWidth = nullptr;
+    juce::AudioParameterFloat* reverbMix = nullptr;
+    juce::AudioParameterBool* reverbFreeze = nullptr;
+    
+    juce::AudioParameterFloat* distDrive = nullptr;
+    juce::AudioParameterFloat* distRange = nullptr;
+    juce::AudioParameterFloat* distBlend = nullptr;
+    juce::AudioParameterFloat* distVolume = nullptr;
+
+    juce::AudioParameterFloat* delayLength = nullptr;
+    juce::AudioParameterFloat* delayDryMix = nullptr;
+    juce::AudioParameterFloat* delayWetMix = nullptr;
+    juce::AudioParameterFloat* delayFeedback = nullptr;
+
+
     Delay delay;
     Reverb reverb;
     Distortion distortion;
+
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ReactiveFXAudioProcessor);

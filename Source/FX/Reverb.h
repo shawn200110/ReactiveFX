@@ -5,7 +5,6 @@ public:
     void process(juce::AudioBuffer<float>& buffer);
     void setParameters(int test);
 private:
-    juce::AudioProcessorValueTreeState apvts;
 
     juce::AudioParameterFloat* size{ nullptr };
     juce::AudioParameterFloat* damp{ nullptr };

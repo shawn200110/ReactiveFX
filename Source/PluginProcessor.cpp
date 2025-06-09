@@ -17,11 +17,27 @@ ReactiveFXAudioProcessor::ReactiveFXAudioProcessor()
                       #if ! JucePlugin_IsSynth
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                       #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
                      #endif
-                       )
+                     apvts(*this, nullptr, "Parameters", createParameterLayout())
+                       
 #endif
 {
+    reverbSize = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("ReverbSize"));
+    reverbDamping = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("ReverbDamping"));
+    reverbWidth = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("ReverbWidth"));
+    reverbMix = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("ReverbMix"));
+    reverbFreeze = dynamic_cast<juce::AudioParameterBool*> (apvts.getParameter("ReverbFreeze"));
+
+    distDrive = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DistDrive"));
+    distRange = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DistRange"));
+    distBlend = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DistBlend"));
+    distVolume = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DistVolume"));
+
+    delayLength = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DelayLength"));
+    delayDryMix = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DelayDryMix"));
+    delayWetMix = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DelayWetMix"));
+    delayFeedback = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DelayFeedback"));
 }
 
 ReactiveFXAudioProcessor::~ReactiveFXAudioProcessor()
@@ -188,4 +204,30 @@ void ReactiveFXAudioProcessor::setStateInformation (const void* data, int sizeIn
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new ReactiveFXAudioProcessor();
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout ReactiveFXAudioProcessor::createParameterLayout()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+
+    // Reverb parameters
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("ReverbSize", "Size", 0.0f, 1.0f, 0.5f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("ReverbDamping", "Damping", 0.0f, 1.0f, 0.5f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("ReverbWidth", "Width", 0.0f, 1.0f, 1.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("ReverbMix", "Mix", 0.0f, 1.0f, 0.33f));
+    params.push_back(std::make_unique<juce::AudioParameterBool>("ReverbFreeze", "Freeze", false));
+
+    // Distortion parameters
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("DistDrive", "Drive", 0.0f, 10.0f, 5.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("DistRange", "Range", 0.0f, 10.0f, 5.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("DistBlend", "Blend", 0.0f, 1.0f, 0.5f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("DistVolume", "Volume", 0.0f, 1.0f, 0.8f));
+
+    // Delay parameters
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("DelayLength", "Delay Length", 1.0f, 2000.0f, 500.0f)); // in ms
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("DelayDryMix", "Dry Mix", 0.0f, 1.0f, 0.5f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("DelayWetMix", "Wet Mix", 0.0f, 1.0f, 0.5f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("DelayFeedback", "Feedback", 0.0f, 0.95f, 0.5f));
+
+    return { params.begin(), params.end() };
 }
