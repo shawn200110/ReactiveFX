@@ -188,6 +188,11 @@ void ReactiveFXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     //for (int channel = 0; channel < totalNumInputChannels; ++channel)
     //{
         //auto* channelData = buffer.getWritePointer (channel);
+    featureExtractor.update(buffer);
+
+    float rms = featureExtractor.getRMSLevel();
+    float pk = featureExtractor.getPeakLevel();
+    float spCent = featureExtractor.getSpectralCentroid();
         
     reverb.process(buffer);
     delay.process(buffer, totalNumInputChannels, totalNumOutputChannels);

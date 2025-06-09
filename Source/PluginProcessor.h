@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "FX/Controller.h"
+#include "toolbox/FeatureExtractor.h"
 
 
 
@@ -79,6 +80,8 @@ private:
     Delay delay;
     Reverb reverb;
     Distortion distortion;
+
+    FeatureExtractor featureExtractor;
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
