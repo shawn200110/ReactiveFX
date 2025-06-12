@@ -5,14 +5,17 @@ void Reverb::prepare(const juce::dsp::ProcessSpec& spec) {
     reverb.prepare(spec);
 };
 void Reverb::process(juce::AudioBuffer<float>& buffer) {
-    
-    juce::ScopedNoDenormals noDenormals;
 
-    updateReverbParams();
+    if (!(bypass->get()))
+    {
+        juce::ScopedNoDenormals noDenormals;
 
-    juce::dsp::AudioBlock<float> block(buffer);
-    juce::dsp::ProcessContextReplacing ctx(block);
-    reverb.process(ctx);
+        updateReverbParams();
+
+        juce::dsp::AudioBlock<float> block(buffer);
+        juce::dsp::ProcessContextReplacing ctx(block);
+        reverb.process(ctx);
+    }
 };
 
 

@@ -28,16 +28,23 @@ ReactiveFXAudioProcessor::ReactiveFXAudioProcessor()
     reverbWidth = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("ReverbWidth"));
     reverbMix = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("ReverbMix"));
     reverbFreeze = dynamic_cast<juce::AudioParameterBool*> (apvts.getParameter("ReverbFreeze"));
+    reverbBypass = dynamic_cast<juce::AudioParameterBool*> (apvts.getParameter("ReverbBypass"));
 
     distDrive = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DistDrive"));
     distRange = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DistRange"));
     distBlend = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DistBlend"));
     distVolume = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DistVolume"));
+    distBypass = dynamic_cast<juce::AudioParameterBool*> (apvts.getParameter("DistBypass"));
 
     delayLength = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DelayLength"));
     delayDryMix = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DelayDryMix"));
     delayWetMix = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DelayWetMix"));
     delayFeedback = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("DelayFeedback"));
+    delayBypass = dynamic_cast<juce::AudioParameterBool*> (apvts.getParameter("DelayBypass"));
+
+    peakVolLink = dynamic_cast<juce::AudioParameterChoice*> (apvts.getParameter("PeakVolLink"));
+    rmsVolLink = dynamic_cast<juce::AudioParameterChoice*> (apvts.getParameter("RMSVolLink"));
+    specCentLink = dynamic_cast<juce::AudioParameterChoice*> (apvts.getParameter("SpecCentLink"));
 }
 
 ReactiveFXAudioProcessor::~ReactiveFXAudioProcessor()
@@ -116,9 +123,9 @@ void ReactiveFXAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     spec.maximumBlockSize = static_cast<juce::uint32> (samplesPerBlock);
     spec.sampleRate = sampleRate;
 
-    reverb.setParameters(reverbSize, reverbDamping, reverbWidth, reverbMix, reverbFreeze);
-    distortion.setParameters(distDrive, distRange, distBlend, distVolume);
-    delay.setParameters(delayLength, delayDryMix, delayWetMix, delayFeedback);
+    reverb.setParameters(reverbSize, reverbDamping, reverbWidth, reverbMix, reverbFreeze, reverbBypass);
+    distortion.setParameters(distDrive, distRange, distBlend, distVolume, distBypass);
+    delay.setParameters(delayLength, delayDryMix, delayWetMix, delayFeedback, delayBypass);
 
     reverb.prepare(spec);
     distortion.prepare(spec);
@@ -172,12 +179,9 @@ void ReactiveFXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    reverb.setParameters(reverbSize, reverbDamping, reverbWidth, reverbMix, reverbFreeze);
-    distortion.setParameters(distDrive, distRange, distBlend, distVolume);
-    delay.setParameters(delayLength, delayDryMix, delayWetMix, delayFeedback);
-
-
-    
+    reverb.setParameters(reverbSize, reverbDamping, reverbWidth, reverbMix, reverbFreeze, reverbBypass);
+    distortion.setParameters(distDrive, distRange, distBlend, distVolume, distBypass);
+    delay.setParameters(delayLength, delayDryMix, delayWetMix, delayFeedback, delayBypass);
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -185,19 +189,19 @@ void ReactiveFXAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    //for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    //{
-        //auto* channelData = buffer.getWritePointer (channel);
     featureExtractor.update(buffer);
 
-    float rms = featureExtractor.getRMSLevel();
-    float pk = featureExtractor.getPeakLevel();
-    float spCent = featureExtractor.getSpectralCentroid();
+    applyFeatureToParameter(featureExtractor.getPeakLevel(), peakVolLink);
+    applyFeatureToParameter(featureExtractor.getRMSLevel(), rmsVolLink);
+    applyFeatureToParameter(featureExtractor.getSpectralCentroid(), specCentLink);
+    //float rms = featureExtractor.getRMSLevel();
+    //float pk = featureExtractor.getPeakLevel();
+    //float spCent = featureExtractor.getSpectralCentroid();
         
     reverb.process(buffer);
     delay.process(buffer, totalNumInputChannels, totalNumOutputChannels);
     distortion.process(buffer, totalNumInputChannels, totalNumOutputChannels);
-    //}
+
 }
 
 //==============================================================================
@@ -233,6 +237,30 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new ReactiveFXAudioProcessor();
 }
 
+void ReactiveFXAudioProcessor::applyFeatureToParameter(float featureValue,
+    juce::AudioParameterChoice* linkParam)
+{
+    int choiceIndex = linkParam->getIndex();
+
+    // Example scaling — you can adjust this per feature!
+    float scaledValue = juce::jlimit(0.0f, 1.0f, featureValue * 2.0f);
+
+    switch (choiceIndex)
+    {
+    case 0: // None
+        break;
+    case 1: // ReverbSize
+        reverbSize->setValueNotifyingHost(scaledValue);
+        break;
+    case 2: // DelayFeedback
+        delayFeedback->setValueNotifyingHost(scaledValue);
+        break;
+    case 3: // DistDrive
+        distDrive->setValueNotifyingHost(scaledValue * 10.0f); // Example scaling
+        break;
+    }
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout ReactiveFXAudioProcessor::createParameterLayout()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
@@ -243,18 +271,29 @@ juce::AudioProcessorValueTreeState::ParameterLayout ReactiveFXAudioProcessor::cr
     params.push_back(std::make_unique<juce::AudioParameterFloat>("ReverbWidth", "Width", 0.0f, 1.0f, 1.0f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("ReverbMix", "Mix", 0.0f, 1.0f, 0.33f));
     params.push_back(std::make_unique<juce::AudioParameterBool>("ReverbFreeze", "Freeze", false));
+    params.push_back(std::make_unique<juce::AudioParameterBool>("ReverbBypass", "Reverb Bypass", false));
 
     // Distortion parameters
     params.push_back(std::make_unique<juce::AudioParameterFloat>("DistDrive", "Drive", 0.0f, 10.0f, 5.0f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("DistRange", "Range", 0.0f, 10.0f, 5.0f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("DistBlend", "Blend", 0.0f, 1.0f, 0.5f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("DistVolume", "Volume", 0.0f, 1.0f, 0.8f));
+    params.push_back(std::make_unique<juce::AudioParameterBool>("DistBypass", "Distortion Bypass", false));
 
     // Delay parameters
     params.push_back(std::make_unique<juce::AudioParameterFloat>("DelayLength", "Delay Length", 1.0f, 2000.0f, 500.0f)); // in ms
     params.push_back(std::make_unique<juce::AudioParameterFloat>("DelayDryMix", "Dry Mix", 0.0f, 1.0f, 0.5f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("DelayWetMix", "Wet Mix", 0.0f, 1.0f, 0.5f));
     params.push_back(std::make_unique<juce::AudioParameterFloat>("DelayFeedback", "Feedback", 0.0f, 0.95f, 0.5f));
+    params.push_back(std::make_unique<juce::AudioParameterBool>("DelayBypass", "Delay Bypass", false));
+
+    params.push_back(std::make_unique<juce::AudioParameterChoice>(
+        "PeakVolLink", "Peak Volume Link", juce::StringArray{ "None", "Reverb Room Size", "Distortion Drive", "Delay Feedback"}, 1));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>(
+        "RMSVolLink", "RMS Volume Link", juce::StringArray{ "None", "Reverb Room Size", "Distortion Drive", "Delay Feedback" }, 2));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>(
+        "SpecCentLink", "Spectral Centroid Link", juce::StringArray{ "None", "Reverb Room Size", "Distortion Drive", "Delay Feedback" }, 3));
 
     return { params.begin(), params.end() };
 }
+

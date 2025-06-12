@@ -142,3 +142,15 @@ ReactiveFX.jucer
 *.recipe
 *.lib
 Builds/VisualStudio2022/x64/Debug/Shared Code/Reactive.E601FF12.tlog/unsuccessfulbuild
+Builds/VisualStudio2022/ReactiveFX_VST3.vcxproj.user
+Builds/VisualStudio2022/x64/Debug/Shared Code/Reactive.E601FF12.tlog/unsuccessfulbuild
+Builds/VisualStudio2022/x64/Debug/VST3 Manifest Helper/juce_vst3_helper.ilk
+Builds/VisualStudio2022/x64/Debug/VST3/ReactiveFX.dll
+Builds/VisualStudio2022/x64/Debug/VST3/ReactiveFX.exp
+Builds/VisualStudio2022/x64/Debug/VST3/ReactiveFX.ilk
+Builds/VisualStudio2022/x64/Debug/VST3/ReactiveFX.vst3/Contents/Resources/moduleinfo.json
+Builds/VisualStudio2022/x64/Debug/VST3/ReactiveFX.vst3/Contents/x86_64-win/ReactiveFX.vst3
+Builds/VisualStudio2022/x64/Release/VST3/ReactiveFX.dll
+Builds/VisualStudio2022/x64/Release/VST3/ReactiveFX.exp
+Builds/VisualStudio2022/x64/Release/VST3/ReactiveFX.vst3/Contents/Resources/moduleinfo.json
+Builds/VisualStudio2022/x64/Release/VST3/ReactiveFX.vst3/Contents/x86_64-win/ReactiveFX.vst3

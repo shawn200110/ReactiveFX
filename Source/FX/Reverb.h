@@ -8,13 +8,15 @@ public:
         juce::AudioParameterFloat* dampingIn,
         juce::AudioParameterFloat* widthIn,
         juce::AudioParameterFloat* mixIn,
-        juce::AudioParameterBool* freezeIn)
+        juce::AudioParameterBool* freezeIn,
+        juce::AudioParameterBool* bypassIn)
     {
         size = sizeIn;
         damp = dampingIn;
         width = widthIn;
         mix = mixIn;
         freeze = freezeIn;
+        bypass = bypassIn;
     };
 private:
 
@@ -23,6 +25,7 @@ private:
     juce::AudioParameterFloat* width{ nullptr };
     juce::AudioParameterFloat* mix{ nullptr };
     juce::AudioParameterBool* freeze{ nullptr };
+    juce::AudioParameterBool* bypass{ nullptr };
 
     void updateReverbParams();
 

@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "FX/Controller.h"
 #include "toolbox/FeatureExtractor.h"
+#include "toolbox/FeatureToParametermapping.h"
 
 
 
@@ -64,25 +65,32 @@ private:
     juce::AudioParameterFloat* reverbWidth = nullptr;
     juce::AudioParameterFloat* reverbMix = nullptr;
     juce::AudioParameterBool* reverbFreeze = nullptr;
+    juce::AudioParameterBool* reverbBypass = nullptr;
     
     juce::AudioParameterFloat* distDrive = nullptr;
     juce::AudioParameterFloat* distRange = nullptr;
     juce::AudioParameterFloat* distBlend = nullptr;
     juce::AudioParameterFloat* distVolume = nullptr;
+    juce::AudioParameterBool* distBypass = nullptr;
 
     juce::AudioParameterFloat* delayLength = nullptr;
     juce::AudioParameterFloat* delayDryMix = nullptr;
     juce::AudioParameterFloat* delayWetMix = nullptr;
     juce::AudioParameterFloat* delayFeedback = nullptr;
-    
-    
+    juce::AudioParameterBool* delayBypass = nullptr;
 
+    juce::AudioParameterChoice* peakVolLink = nullptr;
+    juce::AudioParameterChoice* rmsVolLink = nullptr;
+    juce::AudioParameterChoice* specCentLink = nullptr;
+    
     Delay delay;
     Reverb reverb;
     Distortion distortion;
 
     FeatureExtractor featureExtractor;
+    std::vector<FeatureToParameterMapping> featToParam;
 
+    void applyFeatureToParameter(float featureValue, juce::AudioParameterChoice* linkParam);
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     //==============================================================================

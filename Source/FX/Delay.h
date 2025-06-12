@@ -9,21 +9,23 @@ public:
         juce::AudioParameterFloat* lengthIn,
         juce::AudioParameterFloat* dryMixIn,
         juce::AudioParameterFloat* wetMixIn,
-        juce::AudioParameterFloat* feedbackIn)
+        juce::AudioParameterFloat* feedbackIn,
+        juce::AudioParameterBool* bypassIn)
     {
         length = lengthIn;
         dryMix = dryMixIn;
         wetMix = wetMixIn;
         feedback = feedbackIn;
+        bypass = bypassIn;
     };
+private:
     int lastUIWidth, lastUIHeight;
-
     juce::AudioParameterFloat* length;
     juce::AudioParameterFloat* dryMix;
     juce::AudioParameterFloat* wetMix;
     juce::AudioParameterFloat* feedback;
+    juce::AudioParameterBool* bypass;
 
-private:
     // circular buffer variables
     juce::AudioSampleBuffer delayBuffer;
     int delayBufferLength;

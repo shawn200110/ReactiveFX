@@ -28,19 +28,23 @@ void Distortion::process(juce::AudioBuffer<float>& buffer,
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < numInputChannels; ++channel)
+
+    if (!(bypass->get()))
     {
-        auto* channelData = buffer.getWritePointer(channel);
+        for (int channel = 0; channel < numInputChannels; ++channel)
+        {
+            auto* channelData = buffer.getWritePointer(channel);
 
-        for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
+            for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
 
-            float cleanData = *channelData;
+                float cleanData = *channelData;
 
-            *channelData *= driveAmt * rangeAmt;
+                *channelData *= driveAmt * rangeAmt;
 
-            *channelData = (((((2.f / juce::float_Pi) * atan(*channelData)) * blendAmt) + (cleanData * (1.f - blendAmt))) / 2.f) * volumeAmt;
+                *channelData = (((((2.f / juce::float_Pi) * atan(*channelData)) * blendAmt) + (cleanData * (1.f - blendAmt))) / 2.f) * volumeAmt;
 
-            channelData++;
+                channelData++;
+            }
         }
     }
 };

@@ -9,12 +9,14 @@ public:
         juce::AudioParameterFloat* driveIn,
         juce::AudioParameterFloat* rangeIn,
         juce::AudioParameterFloat* blendIn,
-        juce::AudioParameterFloat* volumeIn)
+        juce::AudioParameterFloat* volumeIn,
+        juce::AudioParameterBool* bypassIn)
     {
         drive = driveIn;
         range = rangeIn;
         blend = blendIn;
         volume = volumeIn;
+        bypass = bypassIn;
     };
 
 private:
@@ -22,4 +24,5 @@ private:
     juce::AudioParameterFloat* range;
     juce::AudioParameterFloat* blend;
     juce::AudioParameterFloat* volume;
+    juce::AudioParameterBool* bypass;
 };
